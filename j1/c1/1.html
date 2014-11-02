@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html ng-app="todoApp">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="bootstrap.css" rel="stylesheet" />
+    <link href="bootstrap-theme.css" rel="stylesheet" />
+    <script src="angular.js"></script>
+    <script>
+        var model = {
+            user: "Shev",
+            items : []
+        };
+
+        var todoApp = angular.module("todoApp", []);
+        todoApp.run(function ($http) {
+            $http.get("todo.json").success(function (data) {
+                model.items = data;
+            });
+        });
+        todoApp.controller("ToDoCtrl", function($scope) {
+            $scope.todo = model;
+            $scope.incompleteCount = function() {
+                var count = 0;
+                angular.forEach($scope.todo.items, function (item) {
+                    if (!item.done) {
+                        count ++;
+                    }
+                });
+
+                return count;
+            }
+
+            $scope.warningLevel = function() {
+                if ($scope.incompleteCount() < 3) {
+                    return "label-success";
+                } else {
+                    return "label-warning";
+                }
+            }
+
+            $scope.addNewItem = function(actionText) {
+                $scope.todo.items.push({action: actionText, done: false});
+                $scope.actionText = "";
+            }
+        });
+
+        // filter for showing a number of items.
+        todoApp.filter("myfilter", function() {
+            return function(items, number) {
+                var ret = [];
+                for (var i=0; i<number; i++) {
+                    ret.push(items[i]);
+                }
+
+                return ret;
+            }
+        });
+    </script>
+</head>
+<body ng-controller="ToDoCtrl">
+    <div class="page-header">
+        <h1>{{todo.user}}'s todo list
+            <span class="label label-default" ng-hide="incompleteCount()  == 0" ng-class="warningLevel()">{{incompleteCount()}}/{{todo.items.length}}</span>
+        </h1>
+
+    </div>
+    <div class="panel">
+        <div class="input-group">
+            <input class="form-control" ng-model="actionText"/>
+            <span class="input-group-btn">
+                <button class="btn btn-default" ng-click="addNewItem(actionText)">Add</button>
+            </span>
+        </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Done</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="item in todo.items">
+                    <td>{{item.action}}</td>
+                    <td><input type="checkbox" ng-model="item.done" /></td>
+                    <td>{{item.done}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
