@@ -60,10 +60,9 @@
 </head>
 <body ng-controller="ToDoCtrl">
     <div class="page-header">
-        <h1>{{todo.user}}'s todo list
+        <h1>{{todo.user}}'s todo listddddddd
             <span class="label label-default" ng-hide="incompleteCount()  == 0" ng-class="warningLevel()">{{incompleteCount()}}/{{todo.items.length}}</span>
         </h1>
-
     </div>
     <div class="panel">
         <div class="input-group">
@@ -80,7 +79,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="item in todo.items">
+                <tr ng-repeat="item in todo.items | filter:{done:'false'}">
                     <td>{{item.action}}</td>
                     <td><input type="checkbox" ng-model="item.done" /></td>
                     <td>{{item.done}}</td>
